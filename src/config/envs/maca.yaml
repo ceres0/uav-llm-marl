@@ -1,0 +1,25 @@
+env: "maca"
+
+env_args:
+  map_name: "3v3"            # Supported aliases: "3v3", "5v5", "10v10", or any filename in MaCA/maps/
+  time_limit: null           # null uses map-aware defaults (200 for 3v3, 250 for 5v5, 400 for 10v10)
+  maca_path: null            # null auto-discovers ../MaCA or $MACA_PATH
+  opponent_policy: "attack"  # "attack", "random_attack", "explore", "random", "still"
+  n_move_dirs: 8             # Discrete compass headings (0..315 deg)
+  random_pos: False          # Randomize initial spawn sides/positions
+  mask_invalid_attacks: True # Mask out-of-range / undetected missile actions
+  obs_share_radar: True      # Share friendly radar detections via datalink
+  reward_scale: True         # Scale MaCA rewards for stable value learning
+  reward_scale_rate: 20.0
+  reward_negative_scale: 0.5
+  reward_only_positive: False
+  continuing_episode: False
+  seed: null
+
+test_greedy: True
+test_nepisode: 40
+test_interval: 50000
+log_interval: 50000
+runner_log_interval: 10000
+learner_log_interval: 10000
+t_max: 2000000

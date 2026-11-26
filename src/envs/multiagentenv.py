@@ -1,3 +1,4 @@
+# Modified from EPyMARL for OA-QMIX and LLM-OA-QMIX.
 class MultiAgentEnv(object):
     def step(self, actions):
         """Returns obss, reward, terminated, truncated, info"""
@@ -31,7 +32,6 @@ class MultiAgentEnv(object):
 
     def get_total_actions(self):
         """Returns the total number of actions an agent could ever take"""
-        # TODO: This is only suitable for a discrete 1 dimensional action space for each agent
         raise NotImplementedError
 
     def reset(self, seed=None, options=None):
@@ -62,3 +62,16 @@ class MultiAgentEnv(object):
 
     def get_stats(self):
         return {}
+
+    def get_card_context(self):
+        return {
+            "state": self.get_state(),
+            "obs": self.get_obs(),
+            "avail_actions": self.get_avail_actions(),
+        }
+
+    def get_card_env_descriptor(self):
+        return {
+            "env_name": self.__class__.__name__,
+            "episode_limit": self.episode_limit,
+        }
