@@ -1,0 +1,51 @@
+# --- OA-QMIX (Heuristic Opponent-Aware QMIX) parameters ---
+# Conditions centralized QMIX hypernetwork mixing on heuristic opponent profiles
+# while keeping decentralized actor observations strictly local (CTDE).
+
+action_selector: "epsilon_greedy"
+epsilon_start: 1.0
+epsilon_finish: 0.05
+epsilon_anneal_time: 50000
+evaluation_epsilon: 0.0
+
+runner: "episode"
+buffer_size: 5000
+target_update_interval_or_tau: 200
+
+obs_agent_id: True
+obs_last_action: False
+obs_individual_obs: False
+
+standardise_returns: False
+standardise_rewards: True
+
+agent_output_type: "q"
+learner: "q_learner"
+double_q: True
+mixer: "oa_qmix"
+use_rnn: False
+mixing_embed_dim: 32
+hypernet_layers: 2
+hypernet_embed: 64
+
+name: "oa_qmix"
+
+card:
+  save_episodes: False
+  opponent:
+    enabled: True
+    feature_extraction:
+      enabled: True
+    profile:
+      enabled: True
+      mode: "heuristic"
+      vector_dim: 8
+      refresh_episodes: 4
+      min_episodes: 0
+      window_episodes: 64
+    critic:
+      enabled: True
+      inject_to: "mixer"
+    aux:
+      enabled: False
+      loss_weight: 0.0

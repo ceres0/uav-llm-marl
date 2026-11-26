@@ -1,0 +1,57 @@
+# --- LLM-OA-QMIX (LLM Opponent-Profile QMIX) parameters ---
+# Conditions centralized QMIX hypernetwork mixing on LLM-inferred opponent profiles
+# queried periodically during training via OpenAI-compatible / Ollama API.
+# Decentralized actors only consume local observations (no LLM calls at execution time).
+
+action_selector: "epsilon_greedy"
+epsilon_start: 1.0
+epsilon_finish: 0.05
+epsilon_anneal_time: 50000
+evaluation_epsilon: 0.0
+
+runner: "episode"
+buffer_size: 5000
+target_update_interval_or_tau: 200
+
+obs_agent_id: True
+obs_last_action: False
+obs_individual_obs: False
+
+standardise_returns: False
+standardise_rewards: True
+
+agent_output_type: "q"
+learner: "q_learner"
+double_q: True
+mixer: "oa_qmix"
+use_rnn: False
+mixing_embed_dim: 32
+hypernet_layers: 2
+hypernet_embed: 64
+
+name: "llm_oa_qmix"
+
+card:
+  save_episodes: False
+  llm:
+    model: ""
+    env_file: "config/llm/.env.llm.local"
+  opponent:
+    enabled: True
+    feature_extraction:
+      enabled: True
+    profile:
+      enabled: True
+      mode: "llm"
+      vector_dim: 8
+      min_episodes: 128
+      refresh_episodes: 128
+      window_episodes: 128
+      record_calls: True
+      validate_llm_on_init: True
+    critic:
+      enabled: True
+      inject_to: "mixer"
+    aux:
+      enabled: False
+      loss_weight: 0.0

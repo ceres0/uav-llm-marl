@@ -1,7 +1,19 @@
+# Modified from EPyMARL for OA-QMIX and LLM-OA-QMIX.
 import torch as th
 from torch.distributions import Categorical
 from .epsilon_schedules import DecayThenFlatSchedule
 REGISTRY = {}
+
+
+def _sample_available_actions(avail_actions):
+    """Sample uniformly from the available action mask along the last dimension."""
+    avail_actions = avail_actions.float()
+    totals = avail_actions.sum(dim=-1)
+    if th.any(totals <= 0):
+        raise RuntimeError("Cannot sample from an empty available-action mask")
+    draws = th.rand_like(totals) * totals
+    cdf = avail_actions.cumsum(dim=-1)
+    return (cdf <= draws.unsqueeze(-1)).sum(dim=-1).long()
 
 
 class MultinomialActionSelector():
@@ -42,20 +54,17 @@ class EpsilonGreedyActionSelector():
 
     def select_action(self, agent_inputs, avail_actions, t_env, test_mode=False):
 
-        # Assuming agent_inputs is a batch of Q-Values for each agent bav
         self.epsilon = self.schedule.eval(t_env)
 
         if test_mode:
-            # Greedy action selection only
             self.epsilon = self.args.evaluation_epsilon
 
-        # mask actions that are excluded from selection
         masked_q_values = agent_inputs.clone()
-        masked_q_values[avail_actions == 0.0] = -float("inf")  # should never be selected!
+        masked_q_values[avail_actions == 0.0] = -float("inf")
 
         random_numbers = th.rand_like(agent_inputs[:, :, 0])
         pick_random = (random_numbers < self.epsilon).long()
-        random_actions = Categorical(avail_actions.float()).sample().long()
+        random_actions = _sample_available_actions(avail_actions)
 
         picked_actions = pick_random * random_actions + (1 - pick_random) * masked_q_values.max(dim=2)[1]
         return picked_actions

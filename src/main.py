@@ -1,7 +1,8 @@
+# Modified from EPyMARL for OA-QMIX and LLM-OA-QMIX.
 try:
     # until python 3.10
     from collections import Mapping
-except:
+except Exception:
     # from python 3.10
     from collections.abc import Mapping
 from copy import deepcopy
@@ -24,12 +25,27 @@ SETTINGS["CAPTURE_MODE"] = (
 )
 logger = get_logger()
 
-ex = Experiment("pymarl")
+
+def _env_flag(name, default=True):
+    value = os.environ.get(name)
+    if value is None:
+        return default
+    return value.strip().lower() not in {"0", "false", "no", "off"}
+
+
+ex = Experiment("pymarl", save_git_info=_env_flag("MAGPIE_SACRED_SAVE_GIT_INFO"))
 ex.logger = logger
 ex.captured_out_filter = apply_backspaces_and_linefeeds
 
 results_path = os.path.join(dirname(dirname(abspath(__file__))), "results")
-# results_path = "/home/ubuntu/data"
+
+
+def _sanitize_path_fragment(value):
+    invalid_chars = '<>:"/\\|?*'
+    text = str(value)
+    for char in invalid_chars:
+        text = text.replace(char, "_")
+    return text
 
 
 @ex.main
@@ -103,32 +119,35 @@ if __name__ == "__main__":
     # Load algorithm and env base configs
     env_config = _get_config(params, "--env-config", "envs")
     alg_config = _get_config(params, "--config", "algs")
-    # config_dict = {**config_dict, **env_config, **alg_config}
     config_dict = recursive_dict_update(config_dict, env_config)
     config_dict = recursive_dict_update(config_dict, alg_config)
 
     try:
         map_name = config_dict["env_args"]["map_name"]
-    except:
+    except Exception:
         map_name = config_dict["env_args"]["key"]
+
+    alg_name = config_dict["name"]
 
     # now add all the config to sacred
     ex.add_config(config_dict)
 
     for param in params:
-        if param.startswith("env_args.map_name"):
-            map_name = param.split("=")[1]
-        elif param.startswith("env_args.key"):
-            map_name = param.split("=")[1]
+        if param.startswith("env_args.map_name="):
+            map_name = param.split("=", 1)[1].strip("\"'")
+        elif param.startswith("env_args.key="):
+            map_name = param.split("=", 1)[1].strip("\"'")
+        elif param.startswith("name="):
+            alg_name = param.split("=", 1)[1].strip("\"'")
 
-    # Save to disk by default for sacred
-    logger.info("Saving to FileStorageObserver in results/sacred.")
-    file_obs_path = os.path.join(
-        results_path, f"sacred/{config_dict['name']}/{map_name}"
-    )
-
-    # ex.observers.append(MongoObserver(db_name="marlbench")) #url='172.31.5.187:27017'))
-    ex.observers.append(FileStorageObserver.create(file_obs_path))
-    # ex.observers.append(MongoObserver())
+    if "--unobserved" not in params and "-u" not in params:
+        logger.info("Saving to FileStorageObserver in results/sacred.")
+        file_obs_path = os.path.join(
+            results_path,
+            "sacred",
+            _sanitize_path_fragment(alg_name),
+            _sanitize_path_fragment(map_name),
+        )
+        ex.observers.append(FileStorageObserver.create(file_obs_path))
 
     ex.run_commandline(params)
