@@ -1,4 +1,3 @@
-# Ported from uav-marl-research for OA-QMIX and LLM-OA-QMIX.
 class FeedbackBuilder:
     def build_process_feedback(self, trajectories):
         if not trajectories:

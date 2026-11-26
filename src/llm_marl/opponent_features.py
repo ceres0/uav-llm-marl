@@ -1,4 +1,3 @@
-# Ported from uav-marl-research for OA-QMIX and LLM-OA-QMIX.
 import json
 import os
 from collections import Counter

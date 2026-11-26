@@ -1,4 +1,3 @@
-# Ported from uav-marl-research for OA-QMIX and LLM-OA-QMIX.
 from .capabilities import AlgorithmCapability, infer_algorithm_capability
 from .llm_client import CardLLMError, OpenAICompatibleLLMClient
 from .llm_config import CardLLMConfig, load_llm_config

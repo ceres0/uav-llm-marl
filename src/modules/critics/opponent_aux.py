@@ -1,4 +1,3 @@
-# Ported from uav-marl-research for OA-QMIX and LLM-OA-QMIX.
 import torch as th
 import torch.nn as nn
 import torch.nn.functional as F
