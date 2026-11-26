@@ -1,0 +1,68 @@
+# --- Finetuned-LLM-OA-QMIX (PyMARL2 Finetuned-QMIX + OAQMixer + LLM Opponent Profile) ---
+# Combines PyMARL2's TD(lambda=0.6) NQLearner, Adam(lr=0.001), batch_size=128,
+# batch_size_run=8, and obs_last_action=True with OAQMixer conditioned on
+# online LLM-inferred 8D opponent behavior profiles (CTDE).
+
+action_selector: "epsilon_greedy"
+epsilon_start: 1.0
+epsilon_finish: 0.05
+epsilon_anneal_time: 100000
+evaluation_epsilon: 0.0
+
+runner: "parallel"
+batch_size_run: 8
+buffer_size: 5000
+batch_size: 128
+
+target_update_interval: 200
+
+obs_agent_id: True
+obs_last_action: True
+obs_individual_obs: False
+
+mac: "n_mac"
+agent: "n_rnn"
+rnn_hidden_dim: 64
+agent_output_type: "q"
+
+learner: "nq_learner"
+mixer: "oa_qmix"
+mixing_embed_dim: 32
+hypernet_layers: 2
+hypernet_embed: 64
+
+optimizer: "adam"
+lr: 0.001
+td_lambda: 0.6
+q_lambda: False
+
+use_layer_norm: False
+use_orthogonal: False
+gain: 0.01
+
+name: "Finetuned-LLM-OA-QMIX"
+
+card:
+  save_episodes: False
+  llm:
+    model: ""
+    env_file: "config/llm/.env.llm.local"
+  opponent:
+    enabled: True
+    feature_extraction:
+      enabled: True
+    profile:
+      enabled: True
+      mode: "llm"
+      vector_dim: 8
+      min_episodes: 128
+      refresh_episodes: 128
+      window_episodes: 128
+      record_calls: True
+      validate_llm_on_init: True
+    critic:
+      enabled: True
+      inject_to: "mixer"
+    aux:
+      enabled: False
+      loss_weight: 0.0

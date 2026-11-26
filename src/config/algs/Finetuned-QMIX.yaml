@@ -1,0 +1,45 @@
+# --- Finetuned-QMIX (from PyMARL2: https://github.com/hijkzzz/pymarl2) ---
+
+# Epsilon-greedy action selector
+action_selector: "epsilon_greedy"
+epsilon_start: 1.0
+epsilon_finish: 0.05
+epsilon_anneal_time: 100000
+evaluation_epsilon: 0.0
+
+# Parallel rollout & large batch replay buffer
+runner: "parallel"
+batch_size_run: 8
+buffer_size: 5000
+batch_size: 128
+
+# Target network update interval (in episodes, per PyMARL2 NQLearner)
+target_update_interval: 200
+
+# Include agent ID and previous one-hot action in GRU inputs
+obs_agent_id: True
+obs_last_action: True
+obs_individual_obs: False
+
+# PyMARL2 controller, agent, mixer, and TD(lambda) learner
+mac: "n_mac"
+agent: "n_rnn"
+rnn_hidden_dim: 64
+agent_output_type: "q"
+
+learner: "nq_learner"
+mixer: "qmix"
+mixing_embed_dim: 32
+hypernet_embed: 64
+
+optimizer: "adam"
+lr: 0.001
+td_lambda: 0.6
+q_lambda: False
+
+# Optional LayerNorm and orthogonal weight init
+use_layer_norm: False
+use_orthogonal: False
+gain: 0.01
+
+name: "Finetuned-QMIX"
