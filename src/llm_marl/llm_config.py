@@ -155,7 +155,7 @@ def load_llm_config(explicit_path: str | None = None) -> CardLLMConfig:
         source_path = "env"
     else:
         raise FileNotFoundError(
-            f"LLM env file not found at '{path}'. Copy 'epymarl/config/llm/.env.llm.template' "
+            f"LLM env file not found at '{path}'. Copy 'epymarl/config/llm/.env.llm.example' "
             "to 'epymarl/config/llm/.env.llm.local' (or set LLM_BASE_URL, LLM_API_KEY, LLM_MODEL)."
         )
 

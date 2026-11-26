@@ -252,11 +252,11 @@ $RECYCLE.BIN/
 .env.*
 .env.llm
 .env.llm.*
-!.env.llm.template
+!.env.llm.example
 config/llm/.env*
 config/llm/*.local
 config/llm/*.secret
-!config/llm/.env.llm.template
+!config/llm/.env.llm.example
 
 # Experiment outputs, checkpoints, sacred logs, and plots
 results/

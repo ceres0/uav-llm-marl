@@ -36,7 +36,7 @@
 - `src/modules/critics/opponent_aux.py`：`OpponentAuxHead` 可选对手风格/集火目标辅助预测头
 - `src/llm_marl/`：对手特征提取、启发式/LLM 画像构建、OpenAI 兼容/Ollama 客户端与运行时管理
 - `src/learners/nq_learner.py`、`src/controllers/n_controller.py`、`src/modules/agents/n_rnn_agent.py`、`src/modules/mixers/nmix.py`：PyMARL2 精调 QMIX 主干组件
-- `config/llm/.env.llm.template`：大模型 API 配置模板（实际凭据文件 `.env.llm.local` 已被 `.gitignore` 忽略）
+- `config/llm/.env.llm.example`：大模型 API 配置模板（实际凭据文件 `.env.llm.local` 已被 `.gitignore` 忽略）
 - `tests/test_oa_qmix_integration.py`：MaCA 接入、OA-QMIX、LLM-OA-QMIX 与 Finetuned-LLM-OA-QMIX 集成测试
 - `plot_*_comparison.py` / `plot_all_qmix_variants_2m.py`：实验结果对比可视化脚本
 
@@ -55,7 +55,7 @@ pip install -r requirements.txt
 复制模板并填入你的接口地址、密钥与模型名称（本地文件不会被 Git 追踪）：
 
 ```bash
-cp config/llm/.env.llm.template config/llm/.env.llm.local
+cp config/llm/.env.llm.example config/llm/.env.llm.local
 # 编辑 config/llm/.env.llm.local 填写 LLM_BASE_URL、LLM_API_KEY、LLM_MODEL
 ```
 
